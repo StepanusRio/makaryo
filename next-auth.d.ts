@@ -9,12 +9,17 @@ export type ExtendedUser = DefaultSession["user"] & {
   Profesi: string | undefined;
   Lvl: string | undefined;
 };
-
 declare module "next-auth" {
   interface Session {
     user: ExtendedUser;
   }
-  interface JWT {
-    user: ExtendedUser;
+  interface User {
+    ID?: string;
+    UName?: string;
+    Nama?: string;
+    Instansi?: string;
+    Bagian?: string;
+    Profesi?: string;
+    Lvl?: string;
   }
 }

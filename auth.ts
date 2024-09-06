@@ -1,31 +1,12 @@
 import NextAuth from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import { getUserFromApi, getXToken } from "./lib/utils";
+import authConfig from "./auth.config";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [
-    Credentials({
-      // You can specify which fields should be submitted, by adding keys to the `credentials` object.
-      // e.g. domain, username, password, 2FA token, etc.
-      credentials: {
-        username: {},
-        password: {},
-      },
-      authorize: async (credentials) => {
-        const xToken = await getXToken();
-        const user = await getUserFromApi(
-          xToken,
-          credentials.username as string,
-          credentials.password as string
-        );
-        if (user) {
-          return user;
-        } else {
-          return null;
-        }
-      },
-    }),
-  ],
+  pages:{
+    signIn: '/login',
+    signOut: '/login',
+    error: '/login',
+  },
   callbacks: {
     async session({ session, token }) {
       if (session.user) {
@@ -41,7 +22,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
     async jwt({ token, user }) {
       if (user) {
-        token.id = user.ID;
+        token.ID = user.ID;
         token.UName = user.UName;
         token.Nama = user.Nama;
         token.Instansi = user.Instansi;
@@ -52,4 +33,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
   },
+  session:{
+    strategy:"jwt"
+  },
+  ...authConfig,
 });
