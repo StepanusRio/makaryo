@@ -1,6 +1,6 @@
 import { NextAuthConfig } from "next-auth";
 import credentials from "next-auth/providers/credentials";
-import { getUserFromApi, getXToken } from "./lib/utils";
+import { getUserFromApi } from "./actions";
 
 export default {
   providers: [
@@ -12,9 +12,7 @@ export default {
         password: {},
       },
       authorize: async (credentials) => {
-        const xToken = await getXToken();
         const user = await getUserFromApi(
-          xToken,
           credentials.username as string,
           credentials.password as string
         );

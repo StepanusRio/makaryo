@@ -4,36 +4,27 @@ import NextAuth from "next-auth";
 
 const { auth } = NextAuth(authConfig);
 
-export default auth((req)=>{
+export default auth((req) => {
   const { nextUrl } = req;
 
   const isLoggedIn = !!req.auth;
 
-	const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
-	const isAuthRoute = authRoutes.includes(nextUrl.pathname);
+  const isPublicRoute = publicRoutes.includes(nextUrl.pathname);
+  const isAuthRoute = authRoutes.includes(nextUrl.pathname);
 
   if (isAuthRoute) {
-		if (isLoggedIn) {
-			return Response.redirect(new URL(DEFAULT_ROUTE_REDIRECT, nextUrl));
-		}
-		return;
-	}
+    if (isLoggedIn) {
+      return Response.redirect(new URL(DEFAULT_ROUTE_REDIRECT, nextUrl));
+    }
+    return;
+  }
   if (!isLoggedIn && !isPublicRoute) {
-		let callbackUrl = nextUrl.pathname;
-		if (nextUrl.search) {
-			callbackUrl += nextUrl.search;
-		}
+    return Response.redirect(new URL(`/`, nextUrl));
+  }
 
-		const encodedCallbackUrl = encodeURIComponent(callbackUrl);
-
-		return Response.redirect(
-			new URL(`/login?callbackUrl=${encodedCallbackUrl}`, nextUrl)
-		);
-	}
-
-	return;
-})
+  return;
+});
 
 export const config = {
-  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"]
-}
+  matcher: ["/((?!.+\\.[\\w]+$|_next).*)", "/", "/(api|trpc)(.*)"],
+};

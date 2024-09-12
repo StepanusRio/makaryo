@@ -2,10 +2,10 @@ import NextAuth from "next-auth";
 import authConfig from "./auth.config";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  pages:{
-    signIn: '/login',
-    signOut: '/login',
-    error: '/login',
+  pages: {
+    signIn: "/login",
+    signOut: "/login",
+    error: "/login",
   },
   callbacks: {
     async session({ session, token }) {
@@ -33,8 +33,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return token;
     },
   },
-  session:{
-    strategy:"jwt"
+  session: {
+    strategy: "jwt",
   },
   ...authConfig,
 });
