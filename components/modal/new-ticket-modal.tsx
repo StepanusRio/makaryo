@@ -48,14 +48,15 @@ export const NewTicketModal: React.FC<NewTicketModalProps> = ({
 
   const onConfirm = async (values: CreateTicketFormValues) => {
     try {
+      loading = true;
       await createTicketAction(
         values.informer,
         values.issue,
         values.category
       ).then((res) => {
         onClose();
+        loading = false;
         router.refresh();
-        console.log(res);
         toast.success(res);
       });
     } catch (error) {

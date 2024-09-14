@@ -29,7 +29,7 @@ export const ViewIssueModal: FC<ViewIssueModalProps> = ({
         <Label>Notes</Label>
         <Textarea
           className="h-24 text-base text-black"
-          value={data.notes}
+          value={data.notes || "No notes available"}
           disabled
         />
       </div>

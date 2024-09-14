@@ -1,4 +1,3 @@
-import { ISSUE_TYPE } from "@/types";
 import { z } from "zod";
 
 export const TicketScemas = z.object({
@@ -8,10 +7,10 @@ export const TicketScemas = z.object({
 });
 
 export const UpdateTicketScemas = z.object({
-  ticket_id: z.string(),
-  worker: z.string(),
-  summary: z.string(),
-  issue_type: z.enum(ISSUE_TYPE as [string, ...string[]]),
+  ticket_id: z.string().optional(),
+  worker: z.string({ message: "Petugas wajib di isi" }),
+  summary: z.string({ message: "Summary wajib di isi" }).optional(),
+  issue_type: z.string().optional(),
 });
 
 export const UpdateTicketNote = z.object({

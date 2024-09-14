@@ -7,9 +7,8 @@ import { useCurrentRole } from "@/hooks/use-current-role";
 import { EmployeeType } from "@/types";
 import { ColumnDef } from "@tanstack/react-table";
 import { useMemo, useState } from "react";
-import { CellAction } from "./cell-action";
-import { TicketColumn, TicketStatus } from "./columns";
-import { ViewAction } from "./view-action";
+import { TicketColumn, TicketStatus } from "../../../_components/columns";
+import { ViewAction } from "../../../_components/view-action";
 
 export type CategoryType = {
   id: number;
@@ -22,7 +21,7 @@ interface TicketClientProps {
   category: CategoryType[];
   employe: EmployeeType[];
 }
-function TicketClient({ data, category, employe }: TicketClientProps) {
+function TicketClient({ data, category }: TicketClientProps) {
   const [open, setOpen] = useState(false);
   const level = useCurrentLevel();
   const role = useCurrentRole();
@@ -49,20 +48,13 @@ function TicketClient({ data, category, employe }: TicketClientProps) {
         cell: ({ row }) => <ViewAction data={row.original} />,
       },
       {
+        accessorKey: "summary",
+        header: "Summary",
+      },
+      {
         accessorKey: "ticket_status",
         header: "Ticket Status",
         cell: ({ row }) => <TicketStatus data={row.original} />,
-      },
-      {
-        accessorKey: "actions",
-        header: "Actions",
-        cell: ({ row }) => (
-          <CellAction
-            data={row.original}
-            employe={employe}
-            category={category}
-          />
-        ),
       },
     ];
 
@@ -80,7 +72,7 @@ function TicketClient({ data, category, employe }: TicketClientProps) {
     }
 
     return baseColumns;
-  }, [role, category, employe, level]);
+  }, [role, level]);
 
   return (
     <>

@@ -1,17 +1,25 @@
 import { getAllCategory, getAllTicket, getEmployee } from "@/actions";
 import { auth } from "@/auth";
 import { EmployeeType } from "@/types";
+import { TicketColumn } from "../../_components/columns";
 import TicketClient from "./_components/client";
-import { TicketColumn } from "./_components/columns";
 
-async function TiketingPage() {
+interface HistoryPenyelesaianPageProps {
+  params: {
+    id: string;
+  };
+}
+
+async function HistoryPenyelesaianPage({
+  params,
+}: HistoryPenyelesaianPageProps) {
   const session = await auth();
   const data = await getAllTicket();
   const ticketUser = data.filter((ticket: TicketColumn) => {
-    if (session?.user.Lvl !== "3") {
-      return ticket.category === session?.user.Instansi;
-    } else {
-      return ticket.ticket_status === "Pembelian";
+    if (session?.user.ID === params.id) {
+      return (
+        ticket.done_by === session?.user.ID && ticket.ticket_status === "Done"
+      );
     }
   });
   const role = session?.user.Instansi;
@@ -24,4 +32,4 @@ async function TiketingPage() {
   );
 }
 
-export default TiketingPage;
+export default HistoryPenyelesaianPage;

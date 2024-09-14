@@ -1,5 +1,6 @@
 "use client";
 
+import { updateStatusAction } from "@/actions";
 import { AddNoteModal } from "@/components/modal/add-note-ticket-modal";
 import { DelegasiModal } from "@/components/modal/delegasi-modal";
 import { EditTicketModal } from "@/components/modal/edit-ticket-modal";
@@ -11,25 +12,44 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Separator } from "@/components/ui/separator";
+import { EmployeeType } from "@/types";
 import { GearIcon } from "@radix-ui/react-icons";
-import { CheckCircle, MoreHorizontal } from "lucide-react";
+import { CheckCircle, ListCollapse, MoreHorizontal } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { BiPurchaseTag, BiTransfer } from "react-icons/bi";
 import { CategoryType } from "./client";
 import { TicketColumn } from "./columns";
 
 interface CellActionProps {
   data: TicketColumn;
   category?: CategoryType[];
+  employe?: EmployeeType[];
 }
 
-export const CellAction: React.FC<CellActionProps> = ({ data, category }) => {
+export const CellAction: React.FC<CellActionProps> = ({
+  data,
+  category,
+  employe,
+}) => {
   const [openSelesai, setOpenSelesai] = useState(false);
   const [openNote, setOpenNote] = useState(false);
   const [openDelegasi, setOpenDelegasi] = useState(false);
   const [status, setStatus] = useState("");
+  const router = useRouter();
+  const pembelianStatus = async (ticket_id: string, status: string) => {
+    try {
+      await updateStatusAction(ticket_id, status);
+      router.refresh();
+    } catch (error) {
+      console.log(error);
+    }
+  };
   return (
     <>
       <EditTicketModal
+        employe={employe}
         data={data}
         isOpen={openSelesai}
         onClose={() => setOpenSelesai(false)}
@@ -74,13 +94,14 @@ export const CellAction: React.FC<CellActionProps> = ({ data, category }) => {
                 <CheckCircle className="mr-2 h-4 w-4" />
                 Edit Note
               </DropdownMenuItem>
+              <Separator />
               <DropdownMenuItem
                 onClick={() => {
-                  setOpenDelegasi(true);
+                  pembelianStatus(data.ticket_id, "Pembelian");
                 }}
               >
-                <CheckCircle className="mr-2 h-4 w-4" />
-                Delegasikan
+                <BiPurchaseTag className="mr-2 h-4 w-4" />
+                Pembelian
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -120,12 +141,32 @@ export const CellAction: React.FC<CellActionProps> = ({ data, category }) => {
                     setOpenDelegasi(true);
                   }}
                 >
-                  <CheckCircle className="mr-2 h-4 w-4" />
-                  Delegasikan
+                  <BiTransfer className="mr-2 h-4 w-4" />
+                  Delegasi
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
-          ) : null}
+          ) : (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="h-8 w-8 p-0">
+                  <span className="sr-only">Open Menu</span>
+                  <MoreHorizontal className="h-4 w-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                <DropdownMenuItem
+                  onClick={() => {
+                    setOpenSelesai(true);
+                  }}
+                >
+                  <ListCollapse className="mr-2 h-4 w-4" />
+                  Lihat Detail
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          )}
         </>
       )}
     </>

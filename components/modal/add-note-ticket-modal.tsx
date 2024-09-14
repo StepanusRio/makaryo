@@ -1,12 +1,21 @@
 "use client";
+import { updateNotesAction, updateStatusAction } from "@/actions";
 import { TicketColumn } from "@/app/(dashboard)/tiketing/_components/columns";
 import { UpdateTicketNote } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FC } from "react";
+import { useRouter } from "next/navigation";
+import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "../ui/button";
-import { Form, FormField, FormItem, FormLabel } from "../ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "../ui/form";
 import { Input } from "../ui/input";
 import Modal from "../ui/modal";
 import { Textarea } from "../ui/textarea";
@@ -26,19 +35,30 @@ export const AddNoteModal: FC<AddNoteModalProps> = ({
   data,
   status,
 }) => {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const form = useForm<AddNoteFormValues>({
     resolver: zodResolver(UpdateTicketNote),
     defaultValues: {
-      notes: data.notes,
+      notes: data.notes || "",
     },
   });
-  const onSubmit = (val: AddNoteFormValues) => {
+  const onSubmit = async (val: AddNoteFormValues) => {
     try {
-      console.log(val);
-      console.log(status);
-    } catch (error) {
-      console.log(error);
-    }
+      setLoading(true);
+      if (status) {
+        status === "Proccess"
+          ? await updateStatusAction(data.ticket_id, "Pending")
+          : await updateStatusAction(data.ticket_id, status);
+        await updateNotesAction(data.ticket_id, val.notes);
+      }
+      if (!status) {
+        await updateNotesAction(data.ticket_id, val.notes);
+      }
+      setLoading(false);
+      onClose();
+      router.refresh();
+    } catch (error) {}
   };
   return (
     <Modal
@@ -67,20 +87,26 @@ export const AddNoteModal: FC<AddNoteModalProps> = ({
                   <Input value={data.issue} disabled />
                 </FormItem>
               </div>
-            ) : (
-              <FormField
-                control={form.control}
-                name="notes"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Notes</FormLabel>
-                    <Textarea placeholder="Add your note" {...field} />
-                  </FormItem>
-                )}
-              />
-            )}
-
+            ) : null}
+            <FormField
+              control={form.control}
+              name="notes"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Notes</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      disabled={loading}
+                      placeholder="Add your note"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <Button
+              disabled={loading}
               variant={
                 status === "Proccess"
                   ? "default"

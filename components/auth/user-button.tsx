@@ -8,14 +8,18 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useCurrentUser } from "@/hooks/use-current-user";
 
+import { FolderClock } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { FC } from "react";
 import { BiExit } from "react-icons/bi";
 import { FaUser } from "react-icons/fa";
+import { Separator } from "../ui/separator";
 import LogoutButton from "./logout-button";
 
 interface UserButtonProps {}
 
 const UserButton: FC<UserButtonProps> = ({}) => {
+  const router = useRouter();
   const user = useCurrentUser();
   return (
     <DropdownMenu>
@@ -28,7 +32,15 @@ const UserButton: FC<UserButtonProps> = ({}) => {
           </AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className="w-40" align="end">
+      <DropdownMenuContent className="w-50" align="end">
+        <DropdownMenuItem
+          onClick={() => {
+            router.push(`/tiketing/history-penyelesaian/${user?.ID}`);
+          }}
+        >
+          <FolderClock className="h-4 w-4 mr-2" /> History Penyelesaian
+        </DropdownMenuItem>
+        <Separator />
         {/* Log out Button */}
         <LogoutButton>
           <DropdownMenuItem>

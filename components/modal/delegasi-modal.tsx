@@ -1,9 +1,12 @@
+import { delegateTicketAction } from "@/actions";
 import { CategoryType } from "@/app/(dashboard)/tiketing/_components/client";
 import { TicketColumn } from "@/app/(dashboard)/tiketing/_components/columns";
 import { DelegasiSchemas } from "@/schemas";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FC } from "react";
+import { useRouter } from "next/navigation";
+import { FC, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { z } from "zod";
 import { Button } from "../ui/button";
 import { Form, FormField, FormItem, FormLabel } from "../ui/form";
@@ -31,15 +34,25 @@ export const DelegasiModal: FC<DelegasiModalProps> = ({
   onClose,
   category,
 }) => {
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
   const form = useForm<DelegasiFormValue>({
     resolver: zodResolver(DelegasiSchemas),
     defaultValues: {
       category: data.category,
     },
   });
-  const onSubmit = (val: DelegasiFormValue) => {
+  const onSubmit = async (val: DelegasiFormValue) => {
     try {
-      console.log(val);
+      setLoading(true);
+      await delegateTicketAction(data.ticket_id, val.category).then(
+        async (res) => {
+          toast.success(res);
+        }
+      );
+      setLoading(false);
+      onClose();
+      router.refresh();
     } catch (error) {
       console.log(error);
     }
@@ -60,6 +73,7 @@ export const DelegasiModal: FC<DelegasiModalProps> = ({
               render={({ field }) => (
                 <FormItem>
                   <Select
+                    disabled={loading}
                     onValueChange={field.onChange}
                     defaultValue={field.value}
                   >
@@ -80,7 +94,9 @@ export const DelegasiModal: FC<DelegasiModalProps> = ({
                 </FormItem>
               )}
             />
-            <Button type="submit">Delegasikan</Button>
+            <Button disabled={loading} type="submit">
+              Delegasikan
+            </Button>
           </div>
         </form>
       </Form>

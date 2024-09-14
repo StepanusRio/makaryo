@@ -1,8 +1,9 @@
 "use client";
 
 import { Badge } from "@/components/ui/badge";
-import { Clock12, TriangleAlert } from "lucide-react";
+import { CheckCircle, Clock12, TriangleAlert } from "lucide-react";
 import { FC } from "react";
+import { BiSolidPurchaseTag } from "react-icons/bi";
 
 export type TicketColumn = {
   id: number;
@@ -31,7 +32,7 @@ export const TicketStatus: FC<TicketProps> = ({ data }) => {
   if (data.ticket_status === "Done") {
     return (
       <Badge className={`bg-green-700 w-2/3 h-8 hover:bg-green-700`}>
-        {data.ticket_status}
+        <CheckCircle className="mr-3 w-4 h-4" /> {data.ticket_status}
       </Badge>
     );
   } else if (data.ticket_status === "Pending") {
@@ -44,6 +45,12 @@ export const TicketStatus: FC<TicketProps> = ({ data }) => {
     return (
       <Badge className={`hover:bg-yellow-500 bg-yellow-500 w-2/3 h-8`}>
         <TriangleAlert className="mr-3 w-4 h-4" /> {data.ticket_status}
+      </Badge>
+    );
+  } else if (data.ticket_status === "Pembelian") {
+    return (
+      <Badge className={`hover:bg-blue-500 bg-blue-500 w-2/3 h-8`}>
+        <BiSolidPurchaseTag className="mr-3 w-4 h-4" /> {data.ticket_status}
       </Badge>
     );
   }

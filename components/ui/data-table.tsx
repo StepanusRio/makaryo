@@ -21,6 +21,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
+import DownloadButton from "../downloadData";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -48,7 +49,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex justify-between items-center py-4">
         <Input
           placeholder="Search..."
           value={(table.getColumn(searchKey)?.getFilterValue() as string) ?? ""}
@@ -57,6 +58,7 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />
+        <DownloadButton data={data} name="Download" />
       </div>
       <div className="rounded-md border">
         <Table>
